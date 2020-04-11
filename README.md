@@ -1,3 +1,9 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Aldrie/XCofey/master/assets/logo.png" width="200" alt="Logo"/>
+
+  <h1><strong>X</strong>Cofey</h1>
+</p>
+
 # Make you developer life easier with this lib
 ## Based in express, this lib is aimed at those who want something quick and easy, when it comes to developing APIs!
 
