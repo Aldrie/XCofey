@@ -3,3 +3,5 @@ src
 nodemon.json
 tsconfig.json
 test
+yarn.lock
+assets
