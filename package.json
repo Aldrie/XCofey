@@ -1,6 +1,6 @@
 {
   "name": "xcofey",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A framework to create apis, based in express",
   "main": "dist",
   "author": "Aldriê Mizobuti",
@@ -8,6 +8,10 @@
     "start": "ts-node ./src/index.ts",
     "dev": "nodemon",
     "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Aldrie/XCofey"
   },
   "license": "MIT",
   "devDependencies": {

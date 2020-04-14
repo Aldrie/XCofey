@@ -5,6 +5,8 @@ import CreateErrorHandler from './creators/errorHandler';
 
 import HttpError from './throwers/httpError';
 
+import HttpStatus from './utils/httpStatus';
+
 // creators
 export {
   CreateServer,
@@ -18,6 +20,11 @@ export * from './creators/route';
 // throwers
 export {
   HttpError,
+};
+
+// utils
+export {
+  HttpStatus,
 };
 
 // types
