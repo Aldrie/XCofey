@@ -5,3 +5,5 @@ tsconfig.json
 test
 yarn.lock
 assets
+.eslintrc
+.eslintignore
