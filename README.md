@@ -37,10 +37,14 @@ CreateServer({
 ### Controller (routes)
 
 ```js
-const { CreateController, Get } = require('xcofey');
+const { CreateController, Get, HttpError, HttpStatus } = require('xcofey');
 
-const sayHelloWordRoute = Get('/hello', (req, res) => {
-  return res.send('Hello Word!');
+const sayHelloWordRoute = Get('/hello', (req, res, next) => {
+  try {
+    return res.send('Hello Word!');
+  } catch(error) {
+    next(new HttpError(HttpStatus.INTERNAL_SERVER_ERROR, 'unexpected error');
+  }
 });
 
 module.exports = CreateController('/', [sayHelloWordRoute]);
