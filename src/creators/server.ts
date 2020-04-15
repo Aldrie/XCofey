@@ -31,7 +31,6 @@ export default function CreateServer(options: ICreateServerOptions) {
     server.use(errorHandler);
   }
 
-
   server.listen(useEnvironment('port') || 8000, () => {
     if (!useEnvironment('disableXCofeylogs')) {
       listenLog(useEnvironment('host') || 'http//localhost', useEnvironment('port') || 8000);

@@ -1,5 +1,5 @@
 import {
-  RequestHandler, Request, Response,
+  RequestHandler, Request, Response, NextFunction,
 } from 'express';
 
 export interface ICreateServerDefaultOptions {
@@ -56,6 +56,6 @@ export type IHttpMethods = 'get'
 export interface ICreateRoute {
   method: IHttpMethods;
   path: string;
-  handler: (req: Request, res: Response) => any,
+  handler: (req: Request, res: Response, next: NextFunction) => any,
   options?: ICreateRouteOptions;
 }
