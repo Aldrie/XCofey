@@ -23,7 +23,7 @@ export default function CreateServer(options: ICreateServerOptions) {
     middlewares: useEnvironment('middlewares'),
   }, useEnvironment('swagger'));
 
-  if (useEnvironment('swagger')) {
+  if (useEnvironment('swagger') && pathsToSwagger) {
     const swaggerOpts = useEnvironment('swagger');
     server.use(swaggerOpts?.route || '/docs', swaggerUi.serve as any,
       swaggerUi.setup(

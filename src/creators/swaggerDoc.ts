@@ -18,7 +18,7 @@ const convertPath = (str) => {
 export default function generateSwaggerDocs(
   title?: string,
   description?: string,
-  paths?: IPathsToSwagger[] | any,
+  paths?: IPathsToSwagger[],
   bearer?: {name?: string},
 ) {
   let swaggerPaths = {};
@@ -28,6 +28,14 @@ export default function generateSwaggerDocs(
     const { controller, routes } = path;
     routes.forEach((route) => {
       const { path: pathName, params: pathParams } = convertPath(`${controller.mainPath}${route.path}`);
+
+      const bodyParam = route?.options?.requestModel ? {
+        in: 'body',
+        name: 'request',
+        schema: {
+          $ref: `#definitions/${route?.options?.requestModel?.name}`,
+        },
+      } : {};
 
       const pathObj = {
         [route.method]: {
@@ -47,13 +55,7 @@ export default function generateSwaggerDocs(
               in: 'path',
               name: item,
             }))),
-            ...(route?.options?.requestModel && [{
-              in: 'body',
-              name: 'request',
-              schema: {
-                $ref: `#definitions/${route?.options?.requestModel.name}`,
-              },
-            }]),
+            bodyParam,
           ],
         },
       };
@@ -72,8 +74,8 @@ export default function generateSwaggerDocs(
         if (route?.options?.requestModel) {
           swaggerModels = {
             ...swaggerModels,
-            [route?.options?.requestModel.name]:
-              route?.options?.requestModel.model,
+            [route?.options?.requestModel?.name]:
+              route?.options?.requestModel?.model,
           };
         }
 
