@@ -1,11 +1,11 @@
 import {
-  Express, RequestHandler, IRouter, Router,
+  Express, IRouter, Router, RequestHandler,
 } from 'express';
 import {
-  IController, ICreateRoute, IControllerOptions, IMiddlewareGuardDefaultOptions,
+  IController, ICreateRoute, IControllerOptions, IMiddlewareGuardDefaultOptions, IPathsToSwagger,
 } from 'types';
 
-export const applyServerMiddlewares = (server: Express, middlewares: RequestHandler[]) => {
+export const applyServerMiddlewares = (server: Express, middlewares) => {
   if (server && middlewares) {
     middlewares.forEach((middleware) => server.use(middleware));
   }
@@ -53,7 +53,9 @@ export const applyControllerRoutes = (
 
 export const applyServerControllers = (
   server: Express, controllers: IController[], controllerOpts?: IMiddlewareGuardDefaultOptions,
-) => {
+  swaggerEnabled?: boolean,
+): IPathsToSwagger[] | void => {
+  const paths: IPathsToSwagger[] = [];
   if (controllers) {
     controllers.forEach((controller) => {
       const { mainPath, routes, options } = controller;
@@ -77,6 +79,10 @@ export const applyServerControllers = (
         disableMiddlewares: controllerOpts?.disableMiddlewares || options?.disableMiddlewares,
       });
       server.use(mainPath, router);
+      if (swaggerEnabled) {
+        paths.push({ controller, routes });
+      }
     });
   }
+  return paths;
 };

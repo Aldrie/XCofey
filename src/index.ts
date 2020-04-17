@@ -1,5 +1,6 @@
 import CreateServer from './creators/server';
 import CreateController from './creators/controller';
+import CreateModel from './creators/model';
 import CreateMiddleware from './creators/middleware';
 import CreateErrorHandler from './creators/errorHandler';
 
@@ -13,6 +14,7 @@ export {
   CreateController,
   CreateMiddleware,
   CreateErrorHandler,
+  CreateModel,
 };
 
 export * from './creators/route';
