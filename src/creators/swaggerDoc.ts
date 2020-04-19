@@ -50,13 +50,15 @@ export default function generateSwaggerDocs(
               }),
             },
           },
-          parameters: [
-            ...(pathParams && pathParams.map((item) => ({
-              in: 'path',
-              name: item,
-            }))),
-            bodyParam,
-          ],
+          ...((Object.keys(pathParams).length > 0 || Object.keys(bodyParam).length > 0) && {
+            parameters: [
+              ...(pathParams && pathParams.map((item) => ({
+                in: 'path',
+                name: item,
+              }))),
+              bodyParam,
+            ],
+          }),
         },
       };
 
@@ -113,6 +115,5 @@ export default function generateSwaggerDocs(
     paths: swaggerPaths,
     definitions: swaggerModels,
   };
-
   return swagger;
 }
