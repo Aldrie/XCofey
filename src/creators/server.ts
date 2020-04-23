@@ -8,6 +8,7 @@ import Environment from '../utils/useEnvironment';
 import { ICreateServerOptions } from '../types';
 import errorHandler from '../handlers/errorHandler';
 import generateSwaggerDocs from './swaggerDoc';
+import HttpError from '../throwers/httpError';
 
 export default function CreateServer(options: ICreateServerOptions) {
   const useEnvironment = Environment(options.dev, options.devOptions, options);
@@ -18,6 +19,10 @@ export default function CreateServer(options: ICreateServerOptions) {
     server.use(express.json());
   }
 
+  if (useEnvironment('logger') !== false) {
+    server.use(useEnvironment('logger') || Logger);
+  }
+
   const pathsToSwagger = applyServerControllers(server, useEnvironment('controllers'), {
     guards: useEnvironment('guards'),
     middlewares: useEnvironment('middlewares'),
@@ -25,15 +30,21 @@ export default function CreateServer(options: ICreateServerOptions) {
 
   if (useEnvironment('swagger') && pathsToSwagger) {
     const swaggerOpts = useEnvironment('swagger');
-    server.use(swaggerOpts?.route || '/docs', swaggerUi.serve as any,
-      swaggerUi.setup(
-        generateSwaggerDocs(swaggerOpts?.title, swaggerOpts?.description, pathsToSwagger, useEnvironment('swagger')?.bearerAuth),
-      ) as any);
+    const swaggerDoc = generateSwaggerDocs({
+      host: useEnvironment('host') || 'localhost',
+      port: useEnvironment('port') || '8000',
+      title: swaggerOpts?.title,
+      description: swaggerOpts?.description,
+      paths: pathsToSwagger,
+      bearer: useEnvironment('swagger')?.bearerAuth,
+    });
+
+    server.use(swaggerOpts?.route || '/docs', swaggerUi.serve as any, swaggerUi.setup(swaggerDoc) as any);
   }
 
-  if (useEnvironment('logger') !== false) {
-    server.use(useEnvironment('logger') || Logger);
-  }
+  server.use((req, res, next) => {
+    next(new HttpError(404, 'Not Found'));
+  });
 
   if (useEnvironment('errorHandler')) {
     server.use(useEnvironment('errorHandler'));
@@ -43,7 +54,7 @@ export default function CreateServer(options: ICreateServerOptions) {
 
   server.listen(useEnvironment('port') || 8000, () => {
     if (!useEnvironment('disableXCofeylogs')) {
-      listenLog(useEnvironment('host') || 'http//localhost', useEnvironment('port') || 8000);
+      listenLog(useEnvironment('host') || 'http://localhost', useEnvironment('port') || 8000);
     }
   });
 }
