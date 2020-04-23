@@ -1,6 +1,6 @@
 {
   "name": "xcofey",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A framework to create apis, based in express",
   "main": "dist",
   "author": "Aldriê Mizobuti",

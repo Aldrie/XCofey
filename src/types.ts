@@ -112,3 +112,14 @@ export interface ICreateModel {
   name: string;
   model: any;
 }
+
+export interface ISwaggerGenerateOpts {
+  host: string;
+  port: string;
+  title?: string,
+  description?: string,
+  paths?: IPathsToSwagger[],
+  bearer?: {
+    name?: string
+  },
+}

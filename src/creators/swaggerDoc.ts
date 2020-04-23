@@ -1,4 +1,4 @@
-import { IPathsToSwagger } from '../types';
+import { ISwaggerGenerateOpts } from '../types';
 
 const convertPath = (str) => {
   const params = [];
@@ -15,12 +15,16 @@ const convertPath = (str) => {
   };
 };
 
-export default function generateSwaggerDocs(
-  title?: string,
-  description?: string,
-  paths?: IPathsToSwagger[],
-  bearer?: {name?: string},
-) {
+export default function generateSwaggerDocs(options: ISwaggerGenerateOpts) {
+  const {
+    host,
+    port,
+    title,
+    description,
+    paths,
+    bearer,
+  } = options;
+
   let swaggerPaths = {};
   let swaggerModels = {};
 
@@ -33,7 +37,14 @@ export default function generateSwaggerDocs(
         in: 'body',
         name: 'request',
         schema: {
-          $ref: `#definitions/${route?.options?.requestModel?.name}`,
+          ...(!Array.isArray(route?.options?.requestModel) ? {
+            $ref: `#definitions/${route?.options?.requestModel?.name}`,
+          } : {
+            type: 'array',
+            items: {
+              $ref: `#definitions/${route?.options?.requestModel[0]?.name}`,
+            },
+          }),
         },
       } : {};
 
@@ -76,8 +87,13 @@ export default function generateSwaggerDocs(
         if (route?.options?.requestModel) {
           swaggerModels = {
             ...swaggerModels,
-            [route?.options?.requestModel?.name]:
+            ...(!Array.isArray(route?.options?.requestModel) ? {
+              [route?.options?.requestModel?.name]:
               route?.options?.requestModel?.model,
+            } : {
+              [route?.options?.requestModel[0]?.name]:
+              route?.options?.requestModel[0]?.model,
+            }),
           };
         }
 
@@ -98,7 +114,7 @@ export default function generateSwaggerDocs(
       title,
       description,
     },
-    host: 'localhost:8000',
+    host: `${host}:${port}`,
     basePath: '/',
     schemes: [
       'http',

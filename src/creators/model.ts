@@ -2,52 +2,22 @@
 /* eslint-disable no-param-reassign */
 import { Model, ICreateModel } from '../types';
 
-const convertModel = (model: any) => {
-  const convertTypeName = (type: any) => {
-    if (type && type.name) {
-      return type.name.toLowerCase();
-    }
-    return type.toString().toLowerCase();
-  };
+export const isOnlyObject = (value: any) => typeof value === 'object' && !Array.isArray(value);
 
-  const generateTypeObject = (type: any) => {
-    if (Array.isArray(type)) {
-      return {
-        type: 'array',
-        items: typeof type[0] === 'object' ? mapObject(type[0]) : { type: convertTypeName(type[0]) },
-      };
-    }
-    return {
-      type: convertTypeName(type),
-    };
-  };
+const convertTypeName = (type: any) => {
+  if (type && type.name) {
+    return type.name.toLowerCase();
+  }
+  return type.toString().toLowerCase();
+};
 
-  const isOnlyObject = (value: any) => typeof value === 'object' && !Array.isArray(value);
-
-  const mapObject = (object: any) => {
-    Object.keys(object).forEach((key) => {
-      const value = object[key];
-      if (isOnlyObject(value)) {
-        let newObject = {};
-        if (value.type) {
-          if (isOnlyObject(value.type)) {
-            newObject = {
-              ...object,
-              [key]: {
-                type: 'object',
-                ...mapObject(value.type ? value.type : value),
-              },
-            };
-          } else {
-            newObject = {
-              ...object,
-              [key]: {
-                ...value,
-                ...generateTypeObject(value.type),
-              },
-            };
-          }
-        } else {
+const mapObject = (object: any) => {
+  Object.keys(object).forEach((key) => {
+    const value = object[key];
+    if (isOnlyObject(value)) {
+      let newObject = {};
+      if (value.type) {
+        if (isOnlyObject(value.type)) {
           newObject = {
             ...object,
             [key]: {
@@ -55,21 +25,51 @@ const convertModel = (model: any) => {
               ...mapObject(value.type ? value.type : value),
             },
           };
-          delete object.type;
+        } else {
+          newObject = {
+            ...object,
+            [key]: {
+              ...value,
+              ...generateTypeObject(value.type),
+            },
+          };
         }
-        object = newObject;
       } else {
-        object[key] = generateTypeObject(object[key]);
+        newObject = {
+          ...object,
+          [key]: {
+            type: 'object',
+            ...mapObject(value.type ? value.type : value),
+          },
+        };
+        delete object.type;
       }
-    });
+      object = newObject;
+    } else {
+      object[key] = generateTypeObject(object[key]);
+    }
+  });
 
 
-    return {
-      type: 'object',
-      properties: object,
-    };
+  return {
+    type: 'object',
+    properties: object,
   };
+};
 
+const generateTypeObject = (type: any) => {
+  if (Array.isArray(type)) {
+    return {
+      type: 'array',
+      items: typeof type[0] === 'object' ? mapObject(type[0]) : { type: convertTypeName(type[0]) },
+    };
+  }
+  return {
+    type: convertTypeName(type),
+  };
+};
+
+const convertModel = (model: any) => {
   if (isOnlyObject(model)) {
     if (model.type) {
       if (isOnlyObject(model.type)) {

@@ -1,7 +1,7 @@
+import { Request, Response, NextFunction } from 'express';
 import { requestLog, errorLog } from '../utils/logs';
-import CreateMiddleware from '../creators/middleware';
 
-const Logger = CreateMiddleware((req, res, next) => {
+const Logger = (req: Request, res: Response, next: NextFunction) => {
   try {
     const { method, originalUrl, body } = req;
     requestLog(method, originalUrl, body);
@@ -10,6 +10,6 @@ const Logger = CreateMiddleware((req, res, next) => {
     errorLog(err);
     next();
   }
-});
+};
 
 export default Logger;
